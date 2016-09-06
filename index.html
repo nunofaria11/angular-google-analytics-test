@@ -1,0 +1,54 @@
+<!doctype html>
+<html>
+
+<head>
+    <title>Angular analytics test</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.5/angular.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.5/angular-sanitize.min.js"></script>
+    <script src="angular-google-analytics.min.js"></script>
+</head>
+</head>
+
+<body ng-app="gaApp">
+    <div ng-controller="gaCtrl">
+        <video controls ng-src="{{trust(gaModel.videoUrl)}}"></video>
+    </div>
+    <script type="text/javascript">
+    var app = angular.module('gaApp', ['angular-google-analytics']);
+
+    app.config(function(AnalyticsProvider) {
+
+        const CONFIG = {
+            trackingId: 'UA-83738763-1'
+        };
+
+        // Use ga.js (classic) instead of analytics.js (universal)
+        // By default, universal analytics is used, unless this is called with a falsey value.
+        AnalyticsProvider.useAnalytics(false);
+
+        // Set a single account
+        AnalyticsProvider.setAccount(CONFIG.trackingId);
+    });
+
+    app.controller('gaCtrl', ['$scope', '$sce', 'Analytics', function($scope, $sce, Analytics) {
+
+        $scope.gaModel = {
+            gaText: '',
+            videoUrl: 'http://www.sample-videos.com/video/mp4/720/big_buck_bunny_720p_1mb.mp4'
+        };
+
+        $scope.trust = function(url) {
+            return $sce.trustAsResourceUrl(url);
+        };
+
+    }]);
+    </script>
+    <style type="text/css">
+    video {
+        width: 800px;
+        height: 600px;
+    }
+    </style>
+</body>
+
+</html>
