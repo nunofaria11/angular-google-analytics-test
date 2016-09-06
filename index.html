@@ -53,18 +53,16 @@
         $scope.onPlay = function() {
             console.log("Sending play event.");
             Analytics.trackEvent('video', 'play', 'big_buck_bunny_720p_1mb.mp4');
+            Analytics.pageView();
         };
 
         $scope.onPause = function() {
             console.log("Sending pause event.");
             Analytics.trackEvent('video', 'pause', 'big_buck_bunny_720p_1mb.mp4');
+            Analytics.pageView();
         };
 
-		Analytics.trackEvent('video', 'play', 'big_buck_bunny_720p_1mb.mp4');
-		Analytics.trackEvent('video', 'pause', 'big_buck_bunny_720p_1mb.mp4');
 		Analytics.pageView();
-
-
     }]);
 
 
