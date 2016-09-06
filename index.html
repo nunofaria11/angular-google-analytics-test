@@ -28,14 +28,15 @@
 
         // Set a single account
         AnalyticsProvider.setAccount({
-        	tracker:CONFIG.trackingId,
-        	trackEvent: true
+            tracker: CONFIG.trackingId,
+            trackEvent: true
         });
     });
 
     // As an example, add the service to the run call:
     app.run(function(Analytics) {
-        Analytics.pageView();
+        //console.log('Analytics page view...');
+        //Analytics.pageView();
     });
 
     app.controller('gaCtrl', ['$scope', '$sce', 'Analytics', function($scope, $sce, Analytics) {
