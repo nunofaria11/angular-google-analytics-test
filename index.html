@@ -69,19 +69,20 @@
                 var isPlaying = false;
 
                 elem.bind('play', function(evt) {
+                	console.log('Playing...');
                     isPlaying = true;
                     if (scope.onPlay) {
                         scope.onPlay(evt);
                     }
-                    console.log('Playing...');
                 });
 
-                elem.bind('pause ended', function(evt) {
+                elem.bind('pause', function(evt) {
+                	console.log('Paused...');
                     isPlaying = true;
                     if (scope.onPause) {
                         scope.onPause(evt);
                     }
-                    console.log('Paused...');
+                    
                 });
 
                 console.log('Video directive initialized.');
