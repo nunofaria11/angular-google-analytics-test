@@ -34,10 +34,7 @@
     });
 
     // As an example, add the service to the run call:
-    app.run(function(Analytics) {
-        //console.log('Analytics page view...');
-        //Analytics.pageView();
-    });
+    app.run(function(Analytics) {});
 
     app.controller('gaCtrl', ['$scope', '$sce', 'Analytics', function($scope, $sce, Analytics) {
 
@@ -62,7 +59,7 @@
             Analytics.pageView();
         };
 
-		Analytics.pageView();
+        Analytics.pageView();
     }]);
 
 
