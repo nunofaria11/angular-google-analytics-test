@@ -1,1 +1,2 @@
 # angular-google-analytics-test
+A test using [angular-google-analytics](https://github.com/revolunet/angular-google-analytics) - [https://nunofaria11.github.io/angular-google-analytics-test/](https://nunofaria11.github.io/angular-google-analytics-test/)
