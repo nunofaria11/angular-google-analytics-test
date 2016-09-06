@@ -11,7 +11,7 @@
 
 <body ng-app="gaApp">
     <div ng-controller="gaCtrl">
-        <video controls ng-src="{{trust(gaModel.videoUrl)}}"></video>
+        <video controls ng-src="{{trust(gaModel.videoUrl)}}" on-play="onPlay()" on-pause="onPause()"></video>
     </div>
     <script type="text/javascript">
     var app = angular.module('gaApp', ['angular-google-analytics']);
@@ -30,6 +30,11 @@
         AnalyticsProvider.setAccount(CONFIG.trackingId);
     });
 
+    // As an example, add the service to the run call:
+    app.run(function(Analytics) {
+        Analytics.pageView();
+    });
+
     app.controller('gaCtrl', ['$scope', '$sce', 'Analytics', function($scope, $sce, Analytics) {
 
         $scope.gaModel = {
@@ -41,12 +46,56 @@
             return $sce.trustAsResourceUrl(url);
         };
 
+        $scope.onPlay = function() {
+            console.log("Sending play event.");
+            Analytics.trackEvent('video', 'play', 'big_buck_bunny_720p_1mb.mp4');
+        };
+
+        $scope.onPause = function() {
+            console.log("Sending pause event.");
+            Analytics.trackEvent('video', 'pause', 'big_buck_bunny_720p_1mb.mp4');
+        };
+
+
     }]);
+
+
+    app.directive('video', function() {
+        return {
+            restrict: "E",
+            scope: {
+                onPlay: '&',
+                onPause: '&'
+            },
+            link: function(scope, elem) {
+
+                var isPlaying = false;
+
+                elem.bind('play', function(evt) {
+                    isPlaying = true;
+                    if (scope.onPlay) {
+                        scope.onPlay(evt);
+                    }
+                    console.log('Playing...');
+                });
+
+                elem.bind('pause ended', function(evt) {
+                    isPlaying = true;
+                    if (scope.onPause) {
+                        scope.onPause(evt);
+                    }
+                    console.log('Paused...');
+                });
+
+                console.log('Video directive initialized.');
+            }
+        };
+    });
     </script>
     <style type="text/css">
     video {
-        width: 800px;
-        height: 600px;
+        width: 600px;
+        height: 400px;
     }
     </style>
 </body>
