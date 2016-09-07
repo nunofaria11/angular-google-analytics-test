@@ -12,11 +12,20 @@
 
 <body ng-app="gaApp">
     <div ng-controller="gaCtrl">
-        <video controls ng-src="{{trust(gaModel.videoUrl)}}" on-play="onPlay()" on-pause="onPause()"></video>
+        <video controls ng-src="{{trust(gaModel.videoUrl)}}" on-play="onPlay()" on-pause="onPause()" on-ended="onEnded()"></video>
+        <div>
+            <input type="text" ng-model="gaModel.text" ng-keypress="onKeypress($event)" placeholder="enter to send...">
+            <button class="send-button" type="button" ng-click="onSend($event)">Send</button>
+            <ul>
+                <li ng-repeat="message in gaModel.messages">[{{ message.timestamp | date: 'medium' }}] {{message.text}}</li>
+            </ul>
+        </div>
+        <div>
+            <button class="share-button" type="button" ng-click="onClick($event)">Share video</button>
+            <p>Shares: {{ gaModel.shares }}</p>
+        </div>
     </div>
-
-	Source code: <a href="https://github.com/nunofaria11/angular-google-analytics-test/" target="_blank">https://github.com/nunofaria11/angular-google-analytics-test</a>
-
+    Source code: <a href="https://github.com/nunofaria11/angular-google-analytics-test/" target="_blank">https://github.com/nunofaria11/angular-google-analytics-test</a>
     <script type="text/javascript">
     var app = angular.module('gaApp', ['angular-google-analytics']);
 
@@ -39,53 +48,100 @@
 
         $scope.gaModel = {
             gaText: '',
-            videoUrl: 'http://www.sample-videos.com/video/mp4/720/big_buck_bunny_720p_1mb.mp4'
+            videoUrl: 'http://www.sample-videos.com/video/mp4/720/big_buck_bunny_720p_1mb.mp4',
+            shares: 0,
+            messages: []
         };
 
         $scope.trust = function(url) {
             return $sce.trustAsResourceUrl(url);
         };
 
-        $scope.onPlay = function() {
+        $scope.onPlay = function(evt) {
             console.log("Sending play event.");
             Analytics.trackEvent('video', 'play', 'big_buck_bunny_720p_1mb.mp4');
         };
 
-        $scope.onPause = function() {
+        $scope.onPause = function(evt) {
             console.log("Sending pause event.");
             Analytics.trackEvent('video', 'pause', 'big_buck_bunny_720p_1mb.mp4');
+        };
+
+        $scope.onEnded = function(evt) {
+            console.log("Sending end event.");
+            Analytics.trackEvent('video', 'end', 'big_buck_bunny_720p_1mb.mp4');
+        };
+
+        $scope.onClick = function(event) {
+            $scope.gaModel.shares++;
+            console.log("Sending click event.");
+            Analytics.trackEvent('button', 'click', 'share');
+        };
+
+        $scope.onKeypress = function(event) {
+            if (event.which === 13) {
+                console.log("Sending send message [enter] event.");
+                Analytics.trackEvent('message-input', 'enter');
+                _send($scope.gaModel.text);
+            }
+        };
+
+        $scope.onSend = function(event) {
+            console.log("Sending send message [enter] event.");
+            Analytics.trackEvent('button', 'click', 'send-message');
+            _send($scope.gaModel.text);
+        };
+
+        function _send(text) {
+            if (text && text.length > 0) {
+
+                console.log("Sending message event.", text);
+                Analytics.trackEvent('message', 'send');
+
+                $scope.gaModel.messages.push({
+                    text: text,
+                    timestamp: Date.now()
+                });
+
+                $scope.gaModel.text = '';
+            }
         };
 
         Analytics.pageView();
     }]);
 
-	// Video play/pause control directive
+    // Video play/pause control directive
     app.directive('video', function() {
         return {
             restrict: "E",
             scope: {
                 onPlay: '&',
-                onPause: '&'
+                onPause: '&',
+                onEnded: '&',
             },
             link: function(scope, elem) {
 
-                var isPlaying = false;
-
                 elem.bind('play', function(evt) {
-                	console.log('Playing...');
-                    isPlaying = true;
+                    console.log('Playing...');
                     if (scope.onPlay) {
                         scope.onPlay(evt);
                     }
                 });
 
                 elem.bind('pause', function(evt) {
-                	console.log('Paused...');
-                    isPlaying = true;
+                    console.log('Paused...');
                     if (scope.onPause) {
                         scope.onPause(evt);
                     }
-                    
+
+                });
+
+                elem.bind('ended', function(evt) {
+                    console.log('Ended...');
+                    if (scope.onEnded) {
+                        scope.onEnded(evt);
+                    }
+
                 });
 
                 console.log('Video directive initialized.');
